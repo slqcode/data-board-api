@@ -1,5 +1,9 @@
-const e = require('express');
-const movies = require('../models/movie.model.js');
+const db = require('../models')
+const movies = db.movies;
+const op = db.Sequelize.Op;
+
+// const e = require('express');
+// const movies = require('../models/movie.model.js');
 
 // 创建新的电影条目
 exports.create = (req, res) => {
@@ -32,7 +36,7 @@ exports.create = (req, res) => {
 
 // 获取所有电影条目
 exports.findAll = (req, res) => {
-  movies.getAll((error, data) => {
+  movies.findAll((error, data) => {
     if (error) {
       res.status(500).send({
         message: error.message || 'Some error occurred while retrieving movies.'

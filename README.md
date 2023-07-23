@@ -1,3 +1,5 @@
+# 目标
+Node.js Restful CRUD API
 # 计划功能
 -[ ] 用户注册和登录
 -[ ] 电影列表展示 
