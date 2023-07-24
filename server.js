@@ -3,16 +3,18 @@ const cors = require('cors') // 引入跨域模块
 
 const db = require('./app/models') // 引入数据库模块
 
-db.sequelize.sync({ force: true }) // 同步数据库
-    .then(() => {
-        console.log('Drop and re-sync db')
-    }).catch((error) => {
-        console.log(error)
-    })
+db.sequelize
+  .sync({ force: false }) // 同步数据库
+  .then(() => {
+    console.log('Drop and re-sync db')
+  })
+  .catch((error) => {
+    console.log(error)
+  })
 
 const app = express() // 创建express应用
 const corsOptions = {
-    origin: 'http://127.0.0.1:8001' // 允许来自8000端口的请求
+  origin: 'http://127.0.0.1:8001', // 允许来自8000端口的请求
 }
 
 app.use(cors(corsOptions)) // 使用跨域中间件

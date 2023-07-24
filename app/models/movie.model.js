@@ -1,18 +1,25 @@
 module.exports = (sequelize, Sequelize) => {
-    const Movie = sequelize.define('movie', {
-        movie_id: {
+  const Movie = sequelize.define(
+    'movie',
+    {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
-        },
-        name: {
-        type: Sequelize.STRING
-        }
-    }, {
-        timestamps: false
-    })
+        autoIncrement: true,
+      },
+      movie_id: {
+        type: Sequelize.STRING,
+      },
+      name: {
+        type: Sequelize.STRING,
+      },
+    },
+    {
+      timestamps: false,
+    }
+  )
 
-    return Movie;
+  return Movie
 }
 //
 // const sql = require('./index.js');

@@ -1,124 +1,173 @@
 const db = require('../models')
-const movies = db.movies;
-const op = db.Sequelize.Op;
-
-// const e = require('express');
-// const movies = require('../models/movie.model.js');
+const movies = db.movies
+// 使用Sequelize的操作符
+const op = db.Sequelize.Op
 
 // 创建新的电影条目
 exports.create = (req, res) => {
   // 如果请求体为空，则返回400状态码和错误消息
+  // 如果请求体为空，返回400状态码和错误消息
   if (!req.body) {
     res.status(400).send({
-      message: 'Content can not be empty!'
+      message: '内容不能为空！',
     })
   }
 
-  // 创建新的电影对象
-  const movie = new movies({
+  const movie = {
     movie_id: req.body.movie_id,
-    name: req.body.name
-  })
+    name: req.body.name,
+  }
 
   // 在数据库中创建新的电影条目
-  movies.create(movie, (error, data) => {
-    // 如果出现错误，则返回500状态码和错误消息
-    if (error) {
-      res.status(500).send({
-        message: error.message || 'Some error occurred while creating the movie.'
-      })
-    } else {
-      // 否则，返回创建的电影数据
+  movies
+    .create(movie)
+    .then((data) => {
       res.send(data)
-    }
-  })
+    })
+    .catch((error) => {
+      res.status(500).send({
+        message: error.message || '创建电影时发生了一些错误。',
+      })
+    })
 }
 
 // 获取所有电影条目
 exports.findAll = (req, res) => {
-  movies.findAll((error, data) => {
-    if (error) {
-      res.status(500).send({
-        message: error.message || 'Some error occurred while retrieving movies.'
-      })
-    } else {
+  const name = req.query.name
+  const condition = name ? { name: { [op.like]: `%${name}%` } } : null
+
+  // 从数据库中检索所有电影
+  movies
+    .findAll({ where: condition })
+    .then((data) => {
       res.send(data)
-    }
-  })
+    })
+    .catch((error) => {
+      res.status(500).send({
+        message: error.message || '检索电影时发生了一些错误。',
+      })
+    })
 }
 
 // 根据ID获取单个电影条目
 exports.findOne = (req, res) => {
-  movies.findById(req.params.id, (error, data) => {
-    if (error) {
-      if (error.kind === 'not_found') {
-        res.status(404).send({
-          message: `Not found movie with id ${req.params.id}.`
-        })
+  const id = req.params.id
+
+  // 从数据库中查找单个电影，find by primary key
+  movies
+    .findByPk(id)
+    .then((data) => {
+      if (data) {
+        res.send(data)
       } else {
-        res.status(500).send({
-          message: `Error retrieving movie with id ${req.params.id}.`
+        res.status(404).send({
+          message: `找不到id=${id}的电影。`,
         })
       }
-    } else {
-      res.send(data)
-    }
-  })
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: '检索id=' + id + '的电影时出错',
+      })
+    })
+}
+
+exports.findById = (req, res) => {
+  const id = req.params.id
+
+  movies
+    .findOne({
+      where: {
+        movie_id: id,
+      },
+    })
+    .then((data) => {
+      if (data) {
+        res.send(data)
+      } else {
+        res.status(404).send({
+          message: `找不到id=${id}的电影。`,
+        })
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: '检索id=' + id + '的电影时出错',
+      })
+    })
 }
 
 // 更新电影条目
 exports.update = (req, res) => {
-  if (!req.body) {
-    res.status(400).send({
-      message: 'Content can not be empty!'
-    })
-  }
+  const id = req.params.id
 
-  movies.updateById(req.params.id, new movies(req.body), (error, data) => {
-    if (error) {
-      if (error.kind === 'not_found') {
-        res.status(404).send({
-          message: `Not found movie with id ${req.params.id}.`
+  // 更新数据库中的电影
+  movies
+    .update(req.body, {
+      where: {
+        movie_id: id,
+      },
+    })
+    .then((data) => {
+      console.log('update data', data)
+      if (data) {
+        res.send({
+          message: '电影已成功更新。',
         })
       } else {
-        res.status(500).send({
-          message: `Error updating movie with id ${req.params.id}.`
+        res.send({
+          message: `无法更新id=${id}的电影。可能电影未找到或req.body为空！`,
         })
       }
-    } else {
-      res.send(data)
-    }
-  })
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: '更新id=' + id + '的电影时出错',
+      })
+    })
 }
 
 // 删除电影条目
 exports.delete = (req, res) => {
-  movies.remove(req.params.id, (error, data) => {
-    if (error) {
-      if (error.kind === 'not_found') {
-        res.status(404).send({
-          message: `Not found movie with id ${req.params.id}.`
+  const id = req.params.id
+
+  // 从数据库中删除电影
+  movies
+    .destroy({
+      where: { movie_id: id },
+    })
+    .then((data) => {
+      if (data) {
+        res.send({
+          message: '电影已成功删除！',
         })
       } else {
-        res.status(500).send({
-          message: `Could not delete movie with id ${req.params.id}.`
+        res.send({
+          message: `无法删除id=${id}的电影。可能电影未找到！`,
         })
       }
-    } else {
-      res.send({ message: `Movie was deleted successfully!` })
-    }
-  })
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: '删除id=' + id + '的电影时出错' + err,
+      })
+    })
 }
 
 // 删除所有电影条目
 exports.deleteAll = (req, res) => {
-  movies.removeAll((error, data) => {
-    if (error) {
+  // 从数据库中删除所有电影
+  movies
+    .destroy({
+      where: {},
+      truncate: false,
+    })
+    .then((data) => {
+      res.send({ message: `${data}部电影已成功删除！` })
+    })
+    .catch((error) => {
       res.status(500).send({
-        message: error.message || 'Some error occurred while removing all movies.'
+        message: error.message || '删除所有电影时发生了一些错误。',
       })
-    } else {
-      res.send({ message: `All movies were deleted successfully!` })
-    }
-  })
+    })
 }
