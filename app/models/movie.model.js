@@ -1,23 +1,75 @@
 module.exports = (sequelize, Sequelize) => {
-  const Movie = sequelize.define(
-    'movie',
-    {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      movie_id: {
-        type: Sequelize.STRING,
-      },
-      name: {
-        type: Sequelize.STRING,
-      },
+  const Movie = sequelize.define('Movie', {
+    createdAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
     },
-    {
-      timestamps: false,
-    }
-  )
+    updatedAt: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
+    id: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+      allowNull: false,
+    },
+    originalName: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    imdbVotes: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    imdbRating: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    rottenRating: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    rottenVotes: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    year: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    imdbId: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    alias: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    doubanId: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    doubanRating: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    doubanVotes: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    duration: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    dateReleased: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  })
 
   return Movie
 }
